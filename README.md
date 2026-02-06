@@ -35,3 +35,43 @@ Use setup.py for installation
 
 Lighter weight, easier for beginners
 
+2. C++ Packages (ament_cmake)
+
+C/C++ packages
+
+Use CMakeLists.txt for building
+
+Better performance for compute-intensive tasks
+
+3. Hybrid Packages
+
+Can contain both Python and C++ code
+
+More complex configuration
+
+2.3 The Build System: Colcon
+
+Colcon (Collective Construction)
+
+Successor to catkin_make from ROS 1
+
+More flexible and modern
+
+Supports parallel building
+
+Common colcon commands:
+
+# Build all packages in workspace
+colcon build
+
+# Build specific package
+colcon build --packages-select my_package
+
+# Build with symlink installation (faster development)
+colcon build --symlink-install
+
+# Build in release mode
+colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+# Build with debugging
+colcon build --cmake-args -DCMAKE_BUILD_TYPE=Debug
