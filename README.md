@@ -15,3 +15,13 @@ By the end of this week, you will be able to:
 
 ✅ Understand dependencies and package relationships
 
+Key Directories:
+
+src/: Your source code - where you develop packages
+
+build/: Intermediate build files (object files, CMake cache)
+
+install/: Final installation - where executables and libraries go
+
+log/: Build logs, warnings, and errors
+
