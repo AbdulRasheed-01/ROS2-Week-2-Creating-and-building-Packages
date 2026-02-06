@@ -25,3 +25,13 @@ install/: Final installation - where executables and libraries go
 
 log/: Build logs, warnings, and errors
 
+2.2 Package Types in ROS 2
+
+1. Python Packages (ament_python)
+
+Pure Python packages
+
+Use setup.py for installation
+
+Lighter weight, easier for beginners
+
