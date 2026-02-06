@@ -98,3 +98,13 @@ source ~/.bashrc
 Step 2: Understanding Package Creation
 
 Python Package Structure:
+
+my_python_pkg/
+├── package.xml
+├── setup.py
+├── setup.cfg
+├── resource/my_python_pkg
+├── my_python_pkg/
+│   ├── __init__.py
+│   └── node_script.py
+└── test/
