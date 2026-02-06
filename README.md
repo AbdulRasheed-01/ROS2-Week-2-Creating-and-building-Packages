@@ -99,12 +99,21 @@ Step 2: Understanding Package Creation
 
 Python Package Structure:
 
-my_python_pkg/
-├── package.xml
-├── setup.py
-├── setup.cfg
-├── resource/my_python_pkg
-├── my_python_pkg/
-│   ├── __init__.py
-│   └── node_script.py
-└── test/
+🔧 Practical Exercises
+Exercise 1: Create Your First Python Package
+
+cd ~/ros2_ws/src
+
+# Create a Python package
+ros2 pkg create my_first_py_pkg --build-type ament_python \
+
+    --dependencies rclpy std_msgs \
+    
+    --description "My first ROS 2 Python package" \
+    
+    --license "Apache-2.0"
+
+# Explore the created structure
+tree my_first_py_pkg
+
+
