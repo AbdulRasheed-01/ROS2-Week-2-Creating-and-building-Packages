@@ -105,7 +105,7 @@ Exercise 1: Create Your First Python Package
 cd ~/ros2_ws/src
 
 # Create a Python package
-ros2 pkg create my_first_py_pkg --build-type ament_python \
+    ros2 pkg create my_first_py_pkg --build-type ament_python \
 
     --dependencies rclpy std_msgs \
     
