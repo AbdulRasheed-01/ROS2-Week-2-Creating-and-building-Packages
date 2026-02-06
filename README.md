@@ -139,5 +139,16 @@ tree my_first_py_pkg
         <build_type>ament_python</build_type>
       </export>
     </package>
+Exercise 2: Create Your First C++ Package
 
+    cd ~/ros2_ws/src
+
+# Create a C++ package
+    ros2 pkg create my_first_cpp_pkg --build-type ament_cmake \
+    --dependencies rclcpp std_msgs \
+    --description "My first ROS 2 C++ package" \
+    --license "Apache-2.0"
+
+# Explore the structure
+tree my_first_cpp_pkg
     
