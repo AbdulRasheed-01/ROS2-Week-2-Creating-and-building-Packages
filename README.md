@@ -75,3 +75,22 @@ colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 # Build with debugging
 colcon build --cmake-args -DCMAKE_BUILD_TYPE=Debug
+
+⚙️ Hands-On Setup
+Step 1: Create Your First Workspace
+
+# Create workspace directory
+mkdir -p ~/ros2_ws/src
+
+cd ~/ros2_ws
+
+# Source ROS 2 (if not already in .bashrc)
+source /opt/ros/humble/setup.bash
+
+# Build empty workspace (creates build/install/log)
+colcon build
+
+# Source your workspace
+echo "source ~/ros2_ws/install/setup.bash" >> ~/.bashrc
+
+source ~/.bashrc
