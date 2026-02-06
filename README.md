@@ -94,3 +94,7 @@ colcon build
 echo "source ~/ros2_ws/install/setup.bash" >> ~/.bashrc
 
 source ~/.bashrc
+
+Step 2: Understanding Package Creation
+
+Python Package Structure:
