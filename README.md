@@ -374,4 +374,17 @@ Python Launch File (my_first_py_pkg/launch/demo.launch.py):
 Run the launch file:
 
     ros2 launch my_first_py_pkg demo.launch.py
+2.6 Package Dependencies
+Types of dependencies in package.xml:
 
+    <!-- Build dependencies (needed during compilation) -->
+    <build_depend>package_name</build_depend>
+
+    <!-- Execution dependencies (needed at runtime) -->
+    <exec_depend>package_name</exec_depend>
+
+    <!-- Test dependencies (needed for testing) -->
+    <test_depend>package_name</test_depend>
+
+    <!-- Shortcut: depend = build_depend + exec_depend -->
+    <depend>package_name</depend>
