@@ -388,3 +388,99 @@ Types of dependencies in package.xml:
 
     <!-- Shortcut: depend = build_depend + exec_depend -->
     <depend>package_name</depend>
+📝 Weekly Project: Multi-Robot Communication System
+Project Description
+Create a package that simulates a multi-robot system with:
+
+Robot Controller Package (Python) - Controls robot movement
+
+Sensor Package (C++) - Simulates sensor data
+
+Monitor Package (Python) - Monitors all robots
+
+Custom Messages - For robot status
+
+Launch Files - To start the entire system
+
+Step-by-Step Implementation
+
+Step 1: Create Workspace Structure
+
+    cd ~/ros2_ws/src
+# Create packages
+    ros2 pkg create robot_controller --build-type ament_python \
+        --dependencies rclpy geometry_msgs
+
+    ros2 pkg create robot_sensors --build-type ament_cmake \
+        --dependencies rclcpp sensor_msgs
+
+    ros2 pkg create system_monitor --build-type ament_python \
+        --dependencies rclpy std_msgs
+
+    ros2 pkg create robot_msgs --build-type ament_cmake \
+        --dependencies std_msgs geometry_msgs
+Step 2: Create Custom Messages
+
+Create robot_msgs/msg/RobotStatus.msg:
+
+    string robot_id
+    geometry_msgs/Pose pose
+    float32 battery_level
+    float32 velocity
+    string status  # "IDLE", "MOVING", "CHARGING"
+
+Step 3: Implement Robot Controller
+
+robot_controller/robot_controller/simple_robot.py:
+
+    #!/usr/bin/env python3
+    import rclpy
+    from rclpy.node import Node
+    from geometry_msgs.msg import Twist, Pose
+    from robot_msgs.msg import RobotStatus
+    import random
+
+    class SimpleRobot(Node):
+        def __init__(self, robot_id):
+            super().__init__(f'robot_{robot_id}')
+            self.robot_id = robot_id
+        
+        # Publisher for robot status
+            self.status_pub = self.create_publisher(
+            RobotStatus, f'/robot/{robot_id}/status', 10)
+        
+        # Subscriber for velocity commands
+            self.cmd_sub = self.create_subscription(
+            Twist, f'/robot/{robot_id}/cmd_vel', self.cmd_callback, 10)
+        
+        # Timer for periodic status updates
+            self.timer = self.create_timer(1.0, self.publish_status)
+        
+        # Robot state
+            self.pose = Pose()
+            self.battery = 100.0
+            self.velocity = 0.0
+            self.status = "IDLE"
+        
+        def cmd_callback(self, msg):
+            self.velocity = msg.linear.x
+            self.status = "MOVING" if abs(self.velocity) > 0.1 else "IDLE"
+        
+        def publish_status(self):
+            # Simulate battery drain
+            self.battery = max(0.0, self.battery - 0.1)
+        
+        # Update pose based on velocity
+            self.pose.position.x += self.velocity * 0.1
+        
+        # Create status message
+            status_msg = RobotStatus()
+            status_msg.robot_id = self.robot_id
+            status_msg.pose = self.pose
+            status_msg.battery_level = self.battery
+            status_msg.velocity = self.velocity
+            status_msg.status = self.status
+        
+            self.status_pub.publish(status_msg)
+            self.get_logger().info(f'Robot {self.robot_id}: {self.status} '
+                              f'Battery: {self.battery:.1f}%')
