@@ -484,3 +484,204 @@ robot_controller/robot_controller/simple_robot.py:
             self.status_pub.publish(status_msg)
             self.get_logger().info(f'Robot {self.robot_id}: {self.status} '
                               f'Battery: {self.battery:.1f}%')
+Step 4: Implement Sensor Package
+
+robot_sensors/src/laser_scanner.cpp:
+    
+    #include "rclcpp/rclcpp.hpp"
+    #include "sensor_msgs/msg/laser_scan.hpp"
+    #include <random>
+
+    class LaserScanner : public rclcpp::Node
+    {
+    public:
+      LaserScanner() : Node("laser_scanner")
+      {
+    // Create publisher for laser scan
+        laser_pub_ = this->create_publisher<sensor_msgs::msg::LaserScan>(
+          "/scan", 10);
+    
+    // Timer for publishing scans (10 Hz)
+        timer_ = this->create_wall_timer(
+          std::chrono::milliseconds(100),
+          std::bind(&LaserScanner::publish_scan, this));
+    
+        RCLCPP_INFO(this->get_logger(), "Laser Scanner node started");
+      }
+
+    private:
+      void publish_scan()
+      {
+        auto scan_msg = sensor_msgs::msg::LaserScan();
+        scan_msg.header.stamp = this->now();
+        scan_msg.header.frame_id = "laser_frame";
+    
+    // Configure scan parameters
+        scan_msg.angle_min = -3.14159 / 2;
+        scan_msg.angle_max = 3.14159 / 2;
+        scan_msg.angle_increment = 3.14159 / 180;
+        scan_msg.time_increment = 0.0;
+        scan_msg.scan_time = 0.1;
+        scan_msg.range_min = 0.1;
+        scan_msg.range_max = 10.0;
+    
+    // Generate random ranges
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<> dis(0.5, 5.0);
+    
+        int num_readings = (scan_msg.angle_max - scan_msg.angle_min) / 
+                           scan_msg.angle_increment;
+    
+        scan_msg.ranges.resize(num_readings);
+        for (int i = 0; i < num_readings; ++i) {
+          scan_msg.ranges[i] = dis(gen);
+        }
+    
+        laser_pub_->publish(scan_msg);
+      }
+  
+      rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr laser_pub_;
+      rclcpp::TimerBase::SharedPtr timer_;
+    };
+
+    int main(int argc, char * argv[])
+    {
+      rclcpp::init(argc, argv);
+      rclcpp::spin(std::make_shared<LaserScanner>());
+      rclcpp::shutdown();
+      return 0;
+    }
+Step 5: Implement System Monitor
+
+system_monitor/system_monitor/central_monitor.py:
+
+    #!/usr/bin/env python3
+    import rclpy
+    from rclpy.node import Node
+    from robot_msgs.msg import RobotStatus
+    from std_msgs.msg import String
+    import json
+
+    class CentralMonitor(Node):
+        def __init__(self):
+            super().__init__('central_monitor')
+        
+        # Subscribe to all robot status topics
+            self.robot_status = {}
+        
+        # Create subscription for each robot
+            for robot_id in ['robot_1', 'robot_2', 'robot_3']:
+                self.create_subscription(
+                    RobotStatus,
+                    f'/robot/{robot_id}/status',
+                    lambda msg, rid=robot_id: self.robot_status_callback(msg, rid),
+                    10
+                )
+        
+        # Timer for system status display
+            self.timer = self.create_timer(2.0, self.display_system_status)
+        
+            self.get_logger().info("Central Monitor started")
+    
+        def robot_status_callback(self, msg, robot_id):
+            self.robot_status[robot_id] = {
+                'battery': msg.battery_level,
+                'status': msg.status,
+                'position': [msg.pose.position.x, msg.pose.position.y],
+                'velocity': msg.velocity
+            }
+    
+        def display_system_status(self):
+            if not self.robot_status:
+                self.get_logger().info("No robots detected")
+                return
+        
+            print("\n" + "="*50)
+            print("SYSTEM STATUS MONITOR")
+            print("="*50)
+        
+            for robot_id, status in self.robot_status.items():
+                print(f"\n{robot_id}:")
+                print(f"  Status: {status['status']}")
+                print(f"  Battery: {status['battery']:.1f}%")
+                print(f"  Position: ({status['position'][0]:.2f}, {status['position'][1]:.2f})")
+                print(f"  Velocity: {status['velocity']:.2f} m/s")
+        
+        # Check for low battery
+            low_battery = [rid for rid, s in self.robot_status.items() 
+                      if s['battery'] < 20.0]
+            if low_battery:
+            print(f"\n⚠️  WARNING: Low battery on {', '.join(low_battery)}")
+        
+            print("="*50)
+
+Step 6: Create Launch Files
+
+robot_controller/launch/multi_robot.launch.py:
+
+    from launch import LaunchDescription
+    from launch_ros.actions import Node
+    from launch.actions import DeclareLaunchArgument
+    from launch.substitutions import LaunchConfiguration
+
+    def generate_launch_description():
+        # Launch argument for number of robots
+        num_robots_arg = DeclareLaunchArgument(
+            'num_robots',
+            default_value='3',
+            description='Number of robots to spawn'
+        )
+    
+        num_robots = LaunchConfiguration('num_robots')
+    
+        # Create robot nodes
+        robot_nodes = []
+        for i in range(1, 4):  # Robots 1-3
+            robot_nodes.append(
+                Node(
+                    package='robot_controller',
+                    executable='simple_robot',
+                    name=f'robot_{i}',
+                    parameters=[{'robot_id': str(i)}],
+                    output='screen'
+                )
+            )
+    
+        # Add sensor node
+        sensor_node = Node(
+            package='robot_sensors',
+            executable='laser_scanner',
+            name='laser_scanner',
+            output='screen'
+        )
+    
+        # Add monitor node
+        monitor_node = Node(
+            package='system_monitor',
+            executable='central_monitor',
+            name='central_monitor',
+            output='screen'
+        )
+    
+        return LaunchDescription([
+            num_robots_arg,
+            *robot_nodes,
+            sensor_node,
+            monitor_node
+        ])
+Step 7: Build and Run
+# Build all packages
+    cd ~/ros2_ws
+    colcon build --symlink-install
+    source install/setup.bash
+
+# Launch the entire system
+    ros2 launch robot_controller multi_robot.launch.py num_robots:=3
+
+# In another terminal, send commands to robots
+    ros2 topic pub /robot/1/cmd_vel geometry_msgs/msg/Twist "linear: {x: 0.5, y: 0.0, z: 0.0} angular: {x: 0.0, y: 0.0, z: 0.0}"
+
+# Monitor topics
+    ros2 topic list | grep robot
+    ros2 topic echo /robot/1/status
