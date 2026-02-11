@@ -287,7 +287,15 @@ Exercise 4: Add Custom Code to C++ Package
           rclcpp::shutdown();
           return 0;
         }
+2. Update CMakeLists.txt to add the executable:
 
+# Add after find_package calls
+    add_executable(simple_subscriber src/simple_subscriber.cpp)
+    ament_target_dependencies(simple_subscriber rclcpp std_msgs)
+
+# Add to install section
+    install(TARGETS simple_subscriber
+      DESTINATION lib/${PROJECT_NAME})
 
    
        
