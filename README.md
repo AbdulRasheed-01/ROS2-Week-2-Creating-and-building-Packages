@@ -309,5 +309,17 @@ Exercise 5: Build and Run
 
 # Terminal 2: Run C++ subscriber
     ros2 run my_first_cpp_pkg simple_subscriber
-   
+
+💻 Advanced Package Concepts
+
+2.4 Creating Custom Messages
+
+Step 1: Create message package
+
+    cd ~/ros2_ws/src
+    ros2 pkg create my_custom_msgs --build-type ament_cmake \
+        --dependencies std_msgs geometry_msgs
+
+# Create message directory
+    mkdir -p my_custom_msgs/msg
        
