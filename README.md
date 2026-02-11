@@ -343,3 +343,10 @@ Step 3: Update CMakeLists.txt
       "msg/VehicleStatus.msg"
       DEPENDENCIES std_msgs geometry_msgs
     )
+Step 4: Update package.xml
+
+    <buildtool_depend>rosidl_default_generators</buildtool_depend>
+    <exec_depend>rosidl_default_runtime</exec_depend>
+    <member_of_group>rosidl_interface_packages</member_of_group>
+
+    
