@@ -296,6 +296,18 @@ Exercise 4: Add Custom Code to C++ Package
 # Add to install section
     install(TARGETS simple_subscriber
       DESTINATION lib/${PROJECT_NAME})
+Exercise 5: Build and Run
+# Build all packages
+    cd ~/ros2_ws
+    colcon build --symlink-install
 
+# Source the workspace
+    source install/setup.bash
+
+# Terminal 1: Run Python publisher
+    ros2 run my_first_py_pkg simple_publisher
+
+# Terminal 2: Run C++ subscriber
+    ros2 run my_first_cpp_pkg simple_subscriber
    
        
