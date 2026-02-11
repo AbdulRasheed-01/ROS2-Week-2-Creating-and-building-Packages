@@ -349,4 +349,29 @@ Step 4: Update package.xml
     <exec_depend>rosidl_default_runtime</exec_depend>
     <member_of_group>rosidl_interface_packages</member_of_group>
 
-    
+2.5 Creating Launch Files
+Python Launch File (my_first_py_pkg/launch/demo.launch.py):
+
+    from launch import LaunchDescription
+    from launch_ros.actions import Node
+
+    def generate_launch_description():
+        return LaunchDescription([
+            Node(
+                package='my_first_py_pkg',
+                executable='simple_publisher',
+                name='my_publisher',
+                output='screen',
+                parameters=[{'publish_rate': 2.0}]
+            ),
+            Node(
+                package='my_first_cpp_pkg',
+                executable='simple_subscriber',
+                name='my_subscriber',
+                output='screen'
+            ),
+        ])
+Run the launch file:
+
+    ros2 launch my_first_py_pkg demo.launch.py
+
