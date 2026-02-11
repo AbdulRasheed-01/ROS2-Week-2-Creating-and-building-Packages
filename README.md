@@ -323,3 +323,23 @@ Step 1: Create message package
 # Create message directory
     mkdir -p my_custom_msgs/msg
        
+Step 2: Create custom message (my_custom_msgs/msg/VehicleStatus.msg)
+
+# Vehicle status message
+    std_msgs/Header header
+    string vehicle_id
+    float32 speed           # km/h
+    float32 battery_level   # percentage
+    float32 temperature     # °C
+    bool engine_on
+    geometry_msgs/Pose pose
+
+Step 3: Update CMakeLists.txt
+# Add after find_package
+    find_package(rosidl_default_generators REQUIRED)
+
+# Add message generation
+    rosidl_generate_interfaces(${PROJECT_NAME}
+      "msg/VehicleStatus.msg"
+      DEPENDENCIES std_msgs geometry_msgs
+    )
