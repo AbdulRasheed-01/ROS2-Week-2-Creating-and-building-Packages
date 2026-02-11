@@ -685,3 +685,65 @@ Step 7: Build and Run
 # Monitor topics
     ros2 topic list | grep robot
     ros2 topic echo /robot/1/status
+🔍 Troubleshooting
+
+Issue 1: "Package not found after build"
+# Source your workspace
+    source ~/ros2_ws/install/setup.bash
+
+# Check if package is found
+    ros2 pkg list | grep your_package
+
+Issue 2: "Could not find a package configuration file"
+# Clean and rebuild
+    cd ~/ros2_ws
+    rm -rf build install log
+    colcon build --symlink-install
+Issue 3: "ModuleNotFoundError" in Python package
+
+    #Check setup.py entry points
+    #Make sure you have:
+    #entry_points={
+        #'console_scripts': [
+             #'node_name = package.module:main',
+    #     ],    
+    # }
+
+# Reinstall the package
+    cd ~/ros2_ws
+    colcon build --packages-select your_package
+
+Issue 4: "Undefined reference" in C++ package
+
+    # Check CMakeLists.txt for missing dependencies
+    # Ensure all libraries are linked:
+    # ament_target_dependencies(your_node DEPENDENCIES_HERE)
+
+    # Clean rebuild
+    colcon build --cmake-clean-cache
+
+Official Documentation:
+
+Creating a Package
+
+Colcon Tutorial
+
+Custom Messages
+
+
+🎉 Congratulations!
+You've completed Week 2! You now know how to:
+
+✅ Create and structure ROS 2 workspaces
+
+✅ Build packages with colcon
+
+✅ Create both Python and C++ packages
+
+✅ Work with package.xml and CMakeLists.txt
+
+✅ Create custom messages and launch files
+
+✅ Manage package dependencies
+
+Next Week: We'll dive into ROS 2 communication patterns - Topics, Services, and Actions!
